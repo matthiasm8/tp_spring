@@ -1,9 +1,11 @@
 package com.matth.tp_spring.controller;
 
 import com.matth.tp_spring.entity.Hero;
-import com.matth.tp_spring.exception.InvalidHeroException;
 import com.matth.tp_spring.service.HeroService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,15 +26,20 @@ public class HeroController {
 
     // POST /api/heroes - Ajoute un héros
     @PostMapping
-    public Hero addHero(@RequestBody Hero hero) throws InvalidHeroException {
-        return heroService.addHero(hero.getName(), hero.getUniverse(), hero.getPowerLevel());
+    public ResponseEntity<?> addHero(@Valid @RequestBody Hero hero) {
+        try {
+            Hero newHero = heroService.addHero(hero);
+            return ResponseEntity.ok(newHero);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     // GET /api/heroes/{id} - Récupère un héros par ID
     @GetMapping("/{id}")
-    public Hero getHeroById(@PathVariable Long id) {
+    public ResponseEntity<?> getHeroById(@PathVariable Long id) {
         Optional<Hero> hero = heroService.getHeroById(id);
-        return hero.orElse(null);
+        return hero.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     // GET /api/heroes/random - Renvoie un héros aléatoire
@@ -45,5 +52,11 @@ public class HeroController {
     @GetMapping("/search")
     public List<Hero> searchHeroesByName(@RequestParam String name) {
         return heroService.searchHeroesByName(name);
+    }
+
+    // Gestion des erreurs de validation
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<String> handleValidationException(MethodArgumentNotValidException ex) {
+        return ResponseEntity.badRequest().body("Erreur de validation : " + ex.getBindingResult().toString());
     }
 }

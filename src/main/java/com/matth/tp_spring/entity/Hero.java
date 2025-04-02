@@ -1,8 +1,12 @@
 package com.matth.tp_spring.entity;
 
-import com.matth.tp_spring.exception.InvalidHeroException;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+import lombok.*;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public class Hero {
 
@@ -10,50 +14,35 @@ public class Hero {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
     private String name;
+
+    @NotBlank
     private String universe;
-    private int powerLevel;
 
-    public Hero() {}
+    @Min(0)
+    @Max(100)
+    private int strength;
 
-    public Hero(String name, String universe, int powerLevel) throws InvalidHeroException {
-        InvalidHeroException.VerifDonnees(name,universe,powerLevel);
-        this.name = name;
-        this.universe = universe;
-        this.powerLevel = powerLevel;
-    }
+    @Min(0)
+    @Max(100)
+    private int defense;
 
-    public Long getId() {
-        return id;
-    }
+    @Min(0)
+    @Max(100)
+    private int speed;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @Min(0)
+    @Max(100)
+    private int accuracy;
 
-    public String getName() {
-        return name;
-    }
+    @Min(0)
+    @Max(100)
+    private int intelligence;
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getUniverse() {
-        return universe;
-    }
-
-    public void setUniverse(String universe) {
-        this.universe = universe;
-    }
-
-    public int getPowerLevel() {
-        return powerLevel;
-    }
-
-    public void setPowerLevel(int powerLevel) {
-        this.powerLevel = powerLevel;
-    }
+    @Min(0)
+    @Max(100)
+    private int luck;
 
     @Override
     public String toString() {
@@ -61,8 +50,12 @@ public class Hero {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", universe='" + universe + '\'' +
-                ", powerLevel=" + powerLevel +
+                ", strength=" + strength +
+                ", defense=" + defense +
+                ", speed=" + speed +
+                ", accuracy=" + accuracy +
+                ", intelligence=" + intelligence +
+                ", luck=" + luck +
                 '}';
     }
 }
-
